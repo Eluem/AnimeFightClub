@@ -1,0 +1,503 @@
+//******************************************************
+// File: Game1.cs
+//
+// Purpose: Contains the definition of the Game1 class.
+// This class is simply a main class. It will hold
+// the main structure of the game and will call
+// all necessary functions and initialize everything.
+//
+// or something like that.... lol
+//
+// Written By: Salvatore Hanusiewicz
+//******************************************************
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using EventInput;
+
+namespace AnimeFightClub001
+{
+    public enum GameState { InitializeSplashScreen, SplashScreen, InitializeLoginMenu, LoginMenu, InitializeMainMenu, MainMenu, InitializeCharacterMenu, CharacterMenu, InitializeBuyMenu, BuyMenu, InitializeServerListMenu, ServerListMenu, InitializeGame, Game, InitializeInGameMenu, InGameMenu };
+    /// <summary>
+    /// This is the main type for your game
+    /// </summary>
+    public class Game1 : Microsoft.Xna.Framework.Game
+    {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        public GameState currGameState;
+        Dictionary<string, Menu> menus;
+
+        Controller playerOneController;
+
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
+            // TODO: Add your initialization logic here
+            //currGameState = GameState.SplashScreen;
+            currGameState = GameState.InitializeSplashScreen;
+
+            this.Window.Title = "AnimeFightClub-Client";
+
+            EventInput.EventInput.Initialize(this.Window);
+            #region Full Screen Initialization
+            //Full Screen Initialization
+            //graphics.PreferredBackBufferWidth = graphics.GraphicsDevice.DisplayMode.Width;
+            //graphics.PreferredBackBufferHeight = graphics.GraphicsDevice.DisplayMode.Height;
+            //graphics.IsFullScreen = true;
+            //graphics.ApplyChanges();
+            #endregion
+
+            menus = new Dictionary<string, Menu>();
+
+            playerOneController = new Controller(PlayerIndex.One, GlobalVariables.Settings.SelControllerType[PlayerIndex.One]);
+
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            List<Point[]> tempLoopList = new List<Point[]>(); //Used as the temporary list of animation loops for different states
+            List<int> tempFrameDurationList = new List<int>(); //Used as the temporary list of frame durations for different states
+
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
+
+            #region Add Fonts
+            GlobalVariables.FontDict.Add("Arial20", Content.Load<SpriteFont>(@"Arial20"));
+            GlobalVariables.FontDict.Add("Arial18", Content.Load<SpriteFont>(@"Arial18"));
+            GlobalVariables.FontDict.Add("Arial12", Content.Load<SpriteFont>(@"Arial12"));
+            GlobalVariables.FontDict.Add("Anvil20", Content.Load<SpriteFont>(@"Anvil20"));
+            GlobalVariables.FontDict.Add("Anvil40", Content.Load<SpriteFont>(@"Anvil40"));
+            GlobalVariables.FontDict.Add("Penshurst20", Content.Load<SpriteFont>(@"Penshurst20"));
+            GlobalVariables.FontDict.Add("Penshurst40", Content.Load<SpriteFont>(@"Penshurst40"));
+            #endregion
+
+            #region Add Images
+
+            #region GUI Assets
+            GlobalVariables.ImageDict.Add("BasicBackground001", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background")));
+
+            #region Load Outline001 Assets
+            GlobalVariables.ImageDict.Add("Outline001_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_L")));
+            GlobalVariables.ImageDict.Add("Outline001_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_R")));
+            GlobalVariables.ImageDict.Add("Outline001_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_T")));
+            GlobalVariables.ImageDict.Add("Outline001_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_B")));
+            GlobalVariables.ImageDict.Add("Outline001_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_TL")));
+            GlobalVariables.ImageDict.Add("Outline001_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_TR")));
+            GlobalVariables.ImageDict.Add("Outline001_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_BL")));
+            GlobalVariables.ImageDict.Add("Outline001_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/focusBorder_BR")));
+            #endregion
+
+            #region Load Border001 Assets
+            GlobalVariables.ImageDict.Add("Border001_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_L")));
+            GlobalVariables.ImageDict.Add("Border001_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_R")));
+            GlobalVariables.ImageDict.Add("Border001_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_T")));
+            GlobalVariables.ImageDict.Add("Border001_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_B")));
+            GlobalVariables.ImageDict.Add("Border001_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_TL")));
+            GlobalVariables.ImageDict.Add("Border001_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_TR")));
+            GlobalVariables.ImageDict.Add("Border001_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_BL")));
+            GlobalVariables.ImageDict.Add("Border001_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_BR")));
+
+            GlobalVariables.ImageDict.Add("Border001_Focus_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_L")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_R")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_T")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_B")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_TL")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_TR")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_BL")));
+            GlobalVariables.ImageDict.Add("Border001_Focus_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/border001_BR")));
+            #endregion
+
+            #region Load TextBox Assets
+            GlobalVariables.ImageDict.Add("TextBox", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_Body")));
+            GlobalVariables.ImageDict.Add("TextBox_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_L")));
+            GlobalVariables.ImageDict.Add("TextBox_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_R")));
+            GlobalVariables.ImageDict.Add("TextBox_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_T")));
+            GlobalVariables.ImageDict.Add("TextBox_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_B")));
+            GlobalVariables.ImageDict.Add("TextBox_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_TL")));
+            GlobalVariables.ImageDict.Add("TextBox_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_TR")));
+            GlobalVariables.ImageDict.Add("TextBox_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_BL")));
+            GlobalVariables.ImageDict.Add("TextBox_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_BR")));
+
+            GlobalVariables.ImageDict.Add("TextBox_Focus", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_Body")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_L")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_R")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_T")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_B")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_TL")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_TR")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_BL")));
+            GlobalVariables.ImageDict.Add("TextBox_Focus_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/textbox_BR")));
+            #endregion
+
+            #region Load Background001 Assets
+            GlobalVariables.ImageDict.Add("Background001", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_Body")));
+            GlobalVariables.ImageDict.Add("Background001_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_L")));
+            GlobalVariables.ImageDict.Add("Background001_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_R")));
+            GlobalVariables.ImageDict.Add("Background001_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_T")));
+            GlobalVariables.ImageDict.Add("Background001_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_B")));
+            GlobalVariables.ImageDict.Add("Background001_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_TL")));
+            GlobalVariables.ImageDict.Add("Background001_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_TR")));
+            GlobalVariables.ImageDict.Add("Background001_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_BL")));
+            GlobalVariables.ImageDict.Add("Background001_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_BR")));
+
+            GlobalVariables.ImageDict.Add("Background001_Focus", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_Body")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_L")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_R")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_T")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_B")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_TL")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_TR")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_BL")));
+            GlobalVariables.ImageDict.Add("Background001_Focus_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/background001_BR")));
+            #endregion
+
+            #region Load RoundButton Assets
+            GlobalVariables.ImageDict.Add("RoundButton", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_Body")));
+            GlobalVariables.ImageDict.Add("RoundButton_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_L")));
+            GlobalVariables.ImageDict.Add("RoundButton_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_R")));
+            GlobalVariables.ImageDict.Add("RoundButton_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_T")));
+            GlobalVariables.ImageDict.Add("RoundButton_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_B")));
+            GlobalVariables.ImageDict.Add("RoundButton_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_TL")));
+            GlobalVariables.ImageDict.Add("RoundButton_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_TR")));
+            GlobalVariables.ImageDict.Add("RoundButton_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_BL")));
+            GlobalVariables.ImageDict.Add("RoundButton_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_BR")));
+
+            GlobalVariables.ImageDict.Add("RoundButton_Focus", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_Body")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_L", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_L")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_R", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_R")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_T", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_T")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_B", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_B")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_TL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_TL")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_TR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_TR")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_BL", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_BL")));
+            GlobalVariables.ImageDict.Add("RoundButton_Focus_BR", new ImageInfo(Content.Load<Texture2D>(@"GUI Assets/button_BR")));
+            #endregion
+
+            #region None
+            
+            GlobalVariables.ImageDict.Add("None_L", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_R", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_T", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_B", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_TL", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_TR", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_BL", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_BR", new ImageInfo(Content.Load<Texture2D>(@"None")));
+
+            GlobalVariables.ImageDict.Add("None_Focus_L", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_R", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_T", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_B", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_TL", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_TR", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_BL", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            GlobalVariables.ImageDict.Add("None_Focus_BR", new ImageInfo(Content.Load<Texture2D>(@"None")));
+            #endregion
+
+            #endregion
+
+            #region Misc
+
+            GlobalVariables.ImageDict.Add("None", new ImageInfo(Content.Load<Texture2D>(@"None"), Point.Zero, 0));
+
+            GlobalVariables.ImageDict.Add("None_Focus", new ImageInfo(Content.Load<Texture2D>(@"None"), Point.Zero, 0));
+
+            GlobalVariables.ImageDict.Add("Default", new ImageInfo(Content.Load<Texture2D>(@"Default")));
+            #endregion
+
+            #region Environmental Assests
+            GlobalVariables.ImageDict.Add("TestPlatform", new ImageInfo(Content.Load<Texture2D>(@"TestPlatform")));
+            GlobalVariables.ImageDict.Add("TestPlatform2", new ImageInfo(Content.Load<Texture2D>(@"TestPlatform2")));
+            #endregion
+
+            #region Character Assets
+            #region NaniNone
+            tempFrameDurationList.Clear();
+            tempLoopList.Clear();
+
+            tempLoopList.Add(new Point[2] { new Point(5, 0), new Point(5, 0) }); //Standing
+            tempFrameDurationList.Add(100);
+
+            tempLoopList.Add(new Point[2] { new Point(0, 0), new Point(5, 0) }); //Running
+            tempFrameDurationList.Add(80);
+
+            tempLoopList.Add(new Point[2] { new Point(6, 0), new Point(1, 1) }); //Jumping
+            tempFrameDurationList.Add(100);
+
+            tempLoopList.Add(new Point[2] { new Point(6, 0), new Point(1, 1) }); //Double Jumping
+            tempFrameDurationList.Add(100);
+
+            tempLoopList.Add(new Point[2] { new Point(1, 1), new Point(1, 1) }); //Jumped
+            tempFrameDurationList.Add(100);
+
+            tempLoopList.Add(new Point[2] { new Point(2, 1), new Point(6, 1) }); //Landed
+            tempFrameDurationList.Add(40);
+
+            GlobalVariables.ImageDict.Add("NaniNone", new ImageInfo(Content.Load<Texture2D>(@"NaniNone"), new Point(100, 131), tempLoopList, tempFrameDurationList));
+            #endregion
+            GlobalVariables.ImageDict.Add("RunSheet1", new ImageInfo(Content.Load<Texture2D>(@"runningsheet"), new Point(101,131), 100));
+            GlobalVariables.ImageDict.Add("JumpSheet1", new ImageInfo(Content.Load<Texture2D>(@"jumpingsheetscaled"), new Point(101, 131), 100));
+            #endregion
+
+            #region Hazard Assets
+            #endregion
+
+            #region Item Assets
+            #endregion
+
+            #region Weapon Assets
+            #endregion
+
+            #region AnimationLoopTest
+            tempLoopList.Add(new Point[2] { new Point(0, 0), new Point(2, 1) });
+            tempLoopList.Add(new Point[2] { new Point(3, 1), new Point(3, 2) });
+            tempLoopList.Add(new Point[2] { new Point(1, 3), new Point(3, 3) });
+            tempLoopList.Add(new Point[2] { new Point(0, 0), new Point(3, 3) });
+
+            tempFrameDurationList.Add(100);
+            tempFrameDurationList.Add(2000);
+            tempFrameDurationList.Add(0);
+            tempFrameDurationList.Add(1000);
+
+            GlobalVariables.ImageDict.Add("AnimationLoopTest", new ImageInfo(Content.Load<Texture2D>(@"AnimationLoopTest"), new Point(52, 52), tempLoopList, tempFrameDurationList));
+            #endregion
+
+            
+            #endregion
+
+            #region Menus
+            menus.Add("LoginMenu", new LoginMenu(null, this));
+            menus.Add("MainMenu", new MainMenu(menus["LoginMenu"], this));
+            menus.Add("ServerMenu", new ServerList(menus["MainMenu"], this));
+            #endregion
+
+        }
+
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// all content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            // TODO: Unload any non ContentManager content here
+        }
+
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+        {
+            //Updates the Game1 controller, used for menus and stuff (not the best solution)
+            playerOneController.Update(gameTime);
+
+            switch (currGameState)
+            {
+                #region Splash Screen
+                case GameState.InitializeSplashScreen:
+                    currGameState = GameState.SplashScreen;
+                    break;
+                case GameState.SplashScreen:
+                    currGameState = GameState.InitializeLoginMenu;
+                    break;
+                #endregion
+
+                #region Login Menu
+                case GameState.InitializeLoginMenu:
+                    NetworkingHandler.StartClient();
+                    menus["LoginMenu"].Initialize();
+
+                    currGameState = GameState.LoginMenu;
+
+                    break;
+                case GameState.LoginMenu:
+                    menus["LoginMenu"].HandleInput(playerOneController);
+                    break;
+                #endregion
+
+                #region Main Menu
+                case GameState.InitializeMainMenu:
+                    menus["MainMenu"].Initialize();
+                    currGameState = GameState.MainMenu;
+                    
+                    break;
+                case GameState.MainMenu:
+                    menus["MainMenu"].HandleInput(playerOneController);
+                    break;
+                #endregion
+
+                #region Character Menu
+                case GameState.InitializeCharacterMenu:
+                    currGameState = GameState.CharacterMenu;
+                    break;
+                case GameState.CharacterMenu:
+                    break;
+                #endregion
+
+                #region Buy Menu
+                case GameState.InitializeBuyMenu:
+                    currGameState = GameState.BuyMenu;
+                    break;
+                case GameState.BuyMenu:
+                    break;
+                #endregion
+
+                #region Server List Menu
+                case GameState.InitializeServerListMenu:
+                    menus["ServerMenu"].Initialize();
+                    currGameState = GameState.ServerListMenu;
+                    break;
+                case GameState.ServerListMenu:
+                    menus["ServerMenu"].HandleInput(playerOneController);
+                    menus["ServerMenu"].Update(gameTime);
+                    break;
+                #endregion
+
+                #region Game
+                case GameState.InitializeGame:
+                    //NetworkingHandler.ConnectToServer("127.0.0.1", 37337);
+                    GameObjectHandler.TrackingCamera.TrackingObj = GameObjectHandler.LocalPlayer.PhysicsObj;
+                    currGameState = GameState.Game;
+                    break;
+                case GameState.Game:
+                    #region Temporary Back Button
+                    if(playerOneController.ControllerState.isControlPressed(Control.Back))
+                    {
+                        //This has to be tested and it should only disconnect from the server, not the master server...
+                        NetworkingHandler.Disconnect("User Request");
+                        currGameState = GameState.InitializeMainMenu;
+                    }
+                    #endregion
+                    GameObjectHandler.LocalPlayer.Controller.Update(gameTime);
+                    NetworkingHandler.HandleMessages();
+                    GameObjectHandler.Update(gameTime, graphics.GraphicsDevice.Viewport);
+                    GameObjectHandler.TrackingCamera.Update();
+                    GlobalVariables.IncrementFrame();
+                    break;
+                #endregion
+
+                #region In Game Menu
+                case GameState.InitializeInGameMenu:
+                    currGameState = GameState.InGameMenu;
+                    break;
+                case GameState.InGameMenu:
+                    break;
+                #endregion
+            }
+
+            playerOneController.PrevControllerState.Copy(playerOneController.ControllerState);
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            switch (currGameState)
+            {
+                #region Splash Screen
+                case GameState.InitializeSplashScreen:
+                    break;
+                case GameState.SplashScreen:
+                    break;
+                #endregion
+
+                #region Login Menu
+                case GameState.InitializeLoginMenu:
+                    break;
+                case GameState.LoginMenu:
+                    menus["LoginMenu"].Draw(spriteBatch, GraphicsDevice, Point.Zero);
+                    break;
+                #endregion
+
+                #region Main Menu
+                case GameState.InitializeMainMenu:
+                    break;
+                case GameState.MainMenu:
+                    menus["MainMenu"].Draw(spriteBatch, GraphicsDevice, Point.Zero);
+                    break;
+                #endregion
+
+                #region Character Menu
+                case GameState.InitializeCharacterMenu:
+                    break;
+                case GameState.CharacterMenu:
+                    spriteBatch.Begin();
+
+                    spriteBatch.End();
+                    break;
+                #endregion
+
+                #region Buy Menu
+                case GameState.InitializeBuyMenu:
+                    break;
+                case GameState.BuyMenu:
+                    break;
+                #endregion
+
+                #region Server List Menu
+                case GameState.InitializeServerListMenu:
+                    break;
+                case GameState.ServerListMenu:
+                    menus["ServerMenu"].Draw(spriteBatch, GraphicsDevice, Point.Zero);
+                    break;
+                #endregion
+
+                #region Game
+                case GameState.InitializeGame:
+                    break;
+                case GameState.Game:
+
+                    spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, GameObjectHandler.TrackingCamera.GetTransformation(graphics.GraphicsDevice));
+                    //spriteBatch.Begin();
+
+                    GameObjectHandler.Draw(spriteBatch);
+
+                    spriteBatch.End();
+
+                    break;
+                #endregion
+
+                #region In Game Menu
+                case GameState.InitializeInGameMenu:
+                    break;
+                case GameState.InGameMenu:
+                    break;
+                #endregion
+            }
+
+            base.Draw(gameTime);
+        }
+    }
+}

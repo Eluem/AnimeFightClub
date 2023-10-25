@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeFightClub001", "AnimeFightClub001\AnimeFightClub001\AnimeFightClub001.csproj", "{E160822E-6B91-42DB-91E8-4BA227054161}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "AnimeFightClub001Content", "AnimeFightClub001\AnimeFightClub001Content\AnimeFightClub001Content.contentproj", "{2FEBE442-EBE3-4EE1-93C3-A8390FD4F7B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E160822E-6B91-42DB-91E8-4BA227054161}.Debug|x86.ActiveCfg = Debug|x86
+		{E160822E-6B91-42DB-91E8-4BA227054161}.Debug|x86.Build.0 = Debug|x86
+		{E160822E-6B91-42DB-91E8-4BA227054161}.Release|x86.ActiveCfg = Release|x86
+		{E160822E-6B91-42DB-91E8-4BA227054161}.Release|x86.Build.0 = Release|x86
+		{2FEBE442-EBE3-4EE1-93C3-A8390FD4F7B0}.Debug|x86.ActiveCfg = Debug|x86
+		{2FEBE442-EBE3-4EE1-93C3-A8390FD4F7B0}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

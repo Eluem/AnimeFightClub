@@ -1,0 +1,8 @@
+-Added volume controls
+ -Main volume
+ -Game volume
+ -Music volume
+-Fixed status effects showing on client after round end (untested)
+-Fixed some bugs that caused crash
+ (mainly involving throwing a bomb and disconnecting)
+-Also fixed sound card bug (untested)

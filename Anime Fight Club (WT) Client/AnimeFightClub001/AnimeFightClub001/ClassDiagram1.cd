@@ -1,0 +1,424 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AnimeFightClub001.Ability" Collapsed="true">
+    <Position X="25" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AERSAAAEAAAAkkAAAAATQAAQAAAUAAAAAAEQIAAAAAA=</HashCode>
+      <FileName>Ability.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.VertButtonList" Collapsed="true">
+    <Position X="19.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAACAQgCgAQJgAACBQAAPAAAgQANEAACwAIAIAAQ=</HashCode>
+      <FileName>VertButtonList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.AbilityFireball" Collapsed="true">
+    <Position X="25" Y="19" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>AbilityFireball.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.BasicObj" Collapsed="true">
+    <Position X="26.25" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CIwAAAAAAAADKEAAQCAFEAQIAIOAIAAAIAQAxAAIAEA=</HashCode>
+      <FileName>BasicObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Button" Collapsed="true">
+    <Position X="33.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Camera2D" Collapsed="true">
+    <Position X="38" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEAIAAAAAIgAEAAAAAAQAACAIAAAAAABAAEAAAQ=</HashCode>
+      <FileName>Camera2D.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Controller" Collapsed="true">
+    <Position X="41.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQQAAAIQAEAAAAAAABAAAAIAAEAABGAQAAAAAEAAAA=</HashCode>
+      <FileName>Controller.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.ControllerState" Collapsed="true">
+    <Position X="43.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAACAQEAAAAAAAAgAACAAABAAAAAAAAiA=</HashCode>
+      <FileName>ControllerState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.DrawableObj" Collapsed="true">
+    <Position X="19" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CEwAABAEABAAAqAAAAIAAAEAAAAABABEACAAgAlAAAg=</HashCode>
+      <FileName>DrawableObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.EnvironmentalObj" Collapsed="true">
+    <Position X="28.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>EnvironmentalObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.FloatRectangle" Collapsed="true">
+    <Position X="38" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABBAAAAABAAAQAEAAQAAIAACACACAAAAIYAA=</HashCode>
+      <FileName>FloatRectangle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Game1" Collapsed="true">
+    <Position X="39.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEEAAAAAAAwASAACAAAAAAAAAAAgAAAAAAAAAAAQ=</HashCode>
+      <FileName>Game1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.GameObjectHandler" Collapsed="true">
+    <Position X="41.5" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABUCAEAAWAQABwAgAMIASAVAZBgAosCCAgAQaAQBIgA=</HashCode>
+      <FileName>GameObjectHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.GlobalVariables" Collapsed="true">
+    <Position X="43.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAOCQQgFCARZAgA0ACIBIAAEQACAgAAlgQMkAIIAAgA=</HashCode>
+      <FileName>GlobalVariables.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.HazardFireball" Collapsed="true">
+    <Position X="21.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HazardFireball.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.HazardObj" Collapsed="true">
+    <Position X="23" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAACAAAAAAAAAAAAAAAQAQABCAAAAIAAAABACAAA=</HashCode>
+      <FileName>HazardObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.ImageInfo" Collapsed="true">
+    <Position X="45" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAwAAhAAAAAAAAEACAEAAAABAAAgAIAIAIAAIAAA=</HashCode>
+      <FileName>ImageInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.ItemObj" Collapsed="true">
+    <Position X="33" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ItemObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.LoginMenu" Collapsed="true">
+    <Position X="24.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAAAAAAAAAEAAAAAAAAAABAAABAQQAAAAYAAAAAwA=</HashCode>
+      <FileName>LoginMenu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.MainMenu" Collapsed="true">
+    <Position X="28.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAQAAAAAQA=</HashCode>
+      <FileName>MainMenu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Menu" Collapsed="true">
+    <Position X="24.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QWQAABKhEAAAB1AAHgAAQAAAgAAAAAgIiAzgAAgIGAI=</HashCode>
+      <FileName>Menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.MenuItem" Collapsed="true">
+    <Position X="27.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UIYgwYCjJoAoEkFAJAGQAWYKjUQAFmkAEAQEQgIqYgI=</HashCode>
+      <FileName>MenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.MessageBox" Collapsed="true">
+    <Position X="22" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>MessageBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.NetworkingHandler" Collapsed="true">
+    <Position X="39.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ASAAACAEDgIAQQAAAAAACAAhAQAAQAAAAAAYSAAAQAA=</HashCode>
+      <FileName>NetworkingHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PacketBuffer" Collapsed="true">
+    <Position X="41.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAEAAAABAAAgAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>PacketBuffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PhysicsObj" Collapsed="true">
+    <Position X="22" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgQAYAQAMAgyAAgAwRAMAOiAIAkIAAQEABCAEAA=</HashCode>
+      <FileName>PhysicsObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PlaceHolderMenuItem" Collapsed="true">
+    <Position X="35.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAAACAIAAAAgAAAAAAAAIAAEAAAAAAAAAFAAAIAAA=</HashCode>
+      <FileName>PlaceHolderMenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PlayerObj" Collapsed="true">
+    <Position X="19.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQQBBQAQASACECAAAEAQQwAABBAAACIBcCAACAkAQ=</HashCode>
+      <FileName>PlayerObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PlayerPhysicsObj" Collapsed="true">
+    <Position X="22" Y="19" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAYAAAIAAAAAADAAgCAICBIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PlayerPhysicsObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.PlayerSprite" Collapsed="true">
+    <Position X="19" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>PlayerSprite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Program" Collapsed="true">
+    <Position X="43.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Server" Collapsed="true">
+    <Position X="45" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EIAAAAAAAAgAAAAAAFAgAAQAKAAAAAAEQAAAAAAACAA=</HashCode>
+      <FileName>Server.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.ServerList" Collapsed="true">
+    <Position X="26.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAUAAAAAAABAAQAAAAAAAAABAAAAAAEAAAAICAAAAAA=</HashCode>
+      <FileName>ServerList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Settings" Collapsed="true">
+    <Position X="38" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AYAAAhAACBGIABABAABQKABCAQAAgCAQClIAAAAAAgg=</HashCode>
+      <FileName>Settings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.SpecialEnvironmentalObj" Collapsed="true">
+    <Position X="26.25" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpecialEnvironmentalObj.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.Sprite" Collapsed="true">
+    <Position X="19" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAABAAAAAAAAAAAEAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Sprite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.TestPlatform" Collapsed="true">
+    <Position X="28.5" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestPlatform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.TestWall" Collapsed="true">
+    <Position X="30.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestWall.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.TextBox" Collapsed="true">
+    <Position X="31" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAACAAAAAAAAACAAAAAAAAEABAAEAEAAACAACAAA=</HashCode>
+      <FileName>TextBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.TrapSpikeHazard" Collapsed="true">
+    <Position X="24" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TrapSpikeHazard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnimeFightClub001.VectListUpdatePacket" Collapsed="true">
+    <Position X="39.75" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAABIAAAgAiAAAAAAAAAACAAAEA=</HashCode>
+      <FileName>VectListPacketUpdate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EventInput.CharacterEventArgs" Collapsed="true">
+    <Position X="39.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAIAAIAAAAAAAAAAAgAAAAEAAAAAAAACAAgAAAACAA=</HashCode>
+      <FileName>TextInput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EventInput.KeyEventArgs" Collapsed="true">
+    <Position X="38" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>TextInput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EventInput.EventInput" Collapsed="true">
+    <Position X="45" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAhIAgQQAKEgAAAKAAQAIAEAACAAAAAwAADQ=</HashCode>
+      <FileName>TextInput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="AnimeFightClub001.Direction" Collapsed="true">
+    <Position X="45" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAACACAAAAAAAI=</HashCode>
+      <FileName>BasicObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.ControllerType" Collapsed="true">
+    <Position X="43.25" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controller.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.Control" Collapsed="true">
+    <Position X="41.5" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAwAAyAAAAEAAACIAAACAAAAAAAIQAAEAIgAAEI=</HashCode>
+      <FileName>ControllerState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.GameState" Collapsed="true">
+    <Position X="38" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAACgAAAAgAACQABAAAAASABgAAAAAAAIABQAQAAA=</HashCode>
+      <FileName>Game1.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.BorderSide" Collapsed="true">
+    <Position X="39.75" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAIAAAAABAAAAAQAAAAAAAIAAAACACAAAAAAEA=</HashCode>
+      <FileName>MenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.messageBoxType" Collapsed="true">
+    <Position X="39.75" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAQA=</HashCode>
+      <FileName>MessageBox.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.PacketType" Collapsed="true">
+    <Position X="43.25" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CEQQUAACIACAFAAAIAAAgAAwAAAAAAQAAAAJCAAAAAA=</HashCode>
+      <FileName>NetworkingHandler.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.PacketSequence" Collapsed="true">
+    <Position X="41.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAAAAAIAAAEAAAAAAAAAAwAAAAAAAAEAAJAAAAAAI=</HashCode>
+      <FileName>NetworkingHandler.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.Side" Collapsed="true">
+    <Position X="39.75" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAgAAAAIAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>PhysicsObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.Axis" Collapsed="true">
+    <Position X="38" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>PhysicsObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.PlayerState" Collapsed="true">
+    <Position X="38" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAABAAAABAAAIAAAAAQAAIQA=</HashCode>
+      <FileName>PlayerObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.PlayerAction" Collapsed="true">
+    <Position X="45" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAACAAAEAAAA=</HashCode>
+      <FileName>PlayerObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AnimeFightClub001.Status" Collapsed="true">
+    <Position X="41.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAACCAAAAAAAAAAAAAAAAAAgAAAAAAAAABAA=</HashCode>
+      <FileName>PlayerObj.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="AnimeFightClub001.BasicMenuItemEventHandler" Collapsed="true">
+    <Position X="38" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="EventInput.CharEnteredHandler" Collapsed="true">
+    <Position X="39.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TextInput.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="EventInput.KeyEventHandler" Collapsed="true">
+    <Position X="41.5" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TextInput.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

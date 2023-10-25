@@ -1,0 +1,13 @@
+syntax: glob
+AnimeFightClub001/AnimeFightClub001/obj/x86/Debug/AnimeFightClub001.pdb.orig
+AnimeFightClub-Server001.suo.orig
+AnimeFightClub001/AnimeFightClub001/obj/x86/Debug/AnimeFightClub001.exe.orig
+AnimeFightClub001/AnimeFightClub001/bin/x86/Debug/AnimeFightClub001.pdb.orig
+AnimeFightClub001/AnimeFightClub001/bin/x86/Debug/AnimeFightClub001.exe.orig
+AnimeFightClub001/AnimeFightClub001/PlayerObj.cs.orig
+AnimeFightClub001/AnimeFightClub001/Controller.cs.orig
+AnimeFightClub001/AnimeFightClub001Content/obj/x86/Debug/ResolveAssemblyReference.cache
+AnimeFightClub001/AnimeFightClub001/obj/x86/Debug/ResolveAssemblyReference.cache
+AnimeFightClub001/AnimeFightClub001/bin/x86/Debug/Lidgren.Network.xml
+AnimeFightClub001/AnimeFightClub001/bin/x86/Debug/Lidgren.Network.pdb
+*.orig

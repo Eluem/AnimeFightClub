@@ -1,0 +1,567 @@
+﻿//******************************************************
+// File: NetworkingHandler.cs
+//
+// Purpose: Contains the definition of the
+// NetworkingHandler. This class will contain all the
+// functions and variables required to talk to the
+// network.
+//
+// (DEVELOPER NOTE: I always send any data regarding
+// all object types in the following order:
+// PlayerObj, HazardObj, EnvironmentalObj,
+// SpecialEnvironmentalObj, ItemObj
+//
+// Written By: Salvatore Hanusiewicz
+//******************************************************
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Storage;
+using Lidgren.Network;
+
+namespace AnimeFightClub001
+{
+    enum PacketType { ObjectStateUpdate, WorldInit, VelocityUpdate, AccelerationUpdate, PositionUpdate, ControllerStateUpdate, AddHazardObj, AddItemObj, AddSpecialEnvironmentalObj, AddEnvironmentalObj, AddPlayerObj, Hail }
+    static class NetworkingHandler
+    {
+        #region Declarions
+        static NetPeerConfiguration m_config = new NetPeerConfiguration("MyExampleName");
+        public static NetClient m_client;
+
+        public static List<UInt16> TestPlayerObjIDBuffer = new List<ushort>();
+        public static List<Vector2> TestPlayerPosBuffer = new List<Vector2>();
+
+        #endregion
+
+        //****************************************************
+        // Method: ConnectToServer
+        //
+        // Purpose: Initializes required variables and
+        // connects to the server
+        //****************************************************
+        static public void ConnectToServer(string ipAddress)
+        {
+
+            m_client = new NetClient (m_config);
+            m_client.Start();
+
+            //Connect to the server in here
+            NetOutgoingMessage hailMessage;
+            hailMessage = m_client.CreateMessage();
+            hailMessage.Write((byte)PacketType.Hail);
+
+            m_client.Connect(ipAddress, 37337, hailMessage);
+            hailMessage = null;
+            NetIncomingMessage incMsg;
+            Boolean cantStart = true;
+            while (cantStart)
+            {
+                while ((incMsg = m_client.ReadMessage()) != null)
+                {
+                    switch (incMsg.MessageType)
+                    {
+                        case NetIncomingMessageType.Data:
+                            PacketType packetType = (PacketType)incMsg.SequenceChannel;
+                            if (packetType == PacketType.WorldInit)
+                            {
+                                UInt32 count; //To be used in all the counts
+                                string objectTypeName; //Stores the name of the object type
+
+                                #region Read PlayerObjs
+                                count = incMsg.ReadUInt32();
+                                
+                                for (int i = 0; i < count; i++)
+                                {
+                                    objectTypeName = incMsg.ReadString();
+
+                                    //Adds an object to the game as the type which was sent
+                                    GameObjectHandler.DirectAddObject((PlayerObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + objectTypeName)));
+
+                                    //Initializes the Object
+                                    GameObjectHandler.PlayerObjList.Last.Value.NetInitialize(incMsg);
+                                }
+                                //Assuming that I'm the last player object in the list right now, since I just joined:
+                                GameObjectHandler.LocalPlayer = GameObjectHandler.PlayerObjList.Last.Value;
+
+                                #endregion
+
+                                #region Read HazardObjs
+                                count = incMsg.ReadUInt32();
+
+                                for (int i = 0; i < count; i++)
+                                {
+                                    //Adds an object to the game as the type which was sent
+                                    GameObjectHandler.DirectAddObject((HazardObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + incMsg.ReadString())));
+
+                                    //Initializes the Object
+                                    GameObjectHandler.HazardObjList.Last.Value.NetInitialize(incMsg);
+                                }
+
+                                #endregion
+
+                                #region Read EnvironmentalObjs
+                                count = incMsg.ReadUInt32();
+
+                                for (int i = 0; i < count; i++)
+                                {
+                                    //Adds an object to the game as the type which was sent
+                                    GameObjectHandler.DirectAddObject((EnvironmentalObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + incMsg.ReadString())));
+
+                                    //Initializes the Object
+                                    GameObjectHandler.EnvironmentalObjList.Last.Value.NetInitialize(incMsg);
+                                }
+
+                                #endregion
+
+                                #region Read SpecialEnvironmentalObjs
+                                count = incMsg.ReadUInt32();
+
+                                for (int i = 0; i < count; i++)
+                                {
+                                    //Adds an object to the game as the type which was sent
+                                    GameObjectHandler.DirectAddObject((SpecialEnvironmentalObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + incMsg.ReadString())));
+
+                                    //Initializes the Object
+                                    GameObjectHandler.SpecialEnvironmentalObjList.Last.Value.NetInitialize(incMsg);
+                                }
+
+                                #endregion
+
+                                #region Read ItemObjs
+                                count = incMsg.ReadUInt32();
+
+                                for (int i = 0; i < count; i++)
+                                {
+                                    //Adds an object to the game as the type which was sent
+                                    GameObjectHandler.DirectAddObject((ItemObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + incMsg.ReadString())));
+
+                                    //Initializes the Object
+                                    GameObjectHandler.ItemObjList.Last.Value.NetInitialize(incMsg);
+                                }
+
+                                #endregion
+
+
+                                cantStart = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unhandled Data Type: " + packetType.ToString());
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("Unhandled Msg: " + incMsg.ReadString());
+                            break;
+                    }
+                }
+            }
+        }
+
+
+
+        //****************************************************
+        // Method: HandleMessages
+        //
+        // Purpose: Reads and handles all network messages
+        //****************************************************
+        static public void HandleMessages()
+        {
+            #region Declarations
+            UInt32 count; //To be used in all the counts
+            UInt16 objID; //To be used in checking all objIDs
+            NetIncomingMessage msg;
+            #endregion
+
+            #region Handle Messages
+
+            while ((msg = m_client.ReadMessage()) != null)
+            {
+                switch (msg.MessageType)
+                {
+                    #region Errors
+                    case NetIncomingMessageType.VerboseDebugMessage:
+                        Console.WriteLine("Verbose Debug Message: " + msg.ReadString());
+                        break;
+                    case NetIncomingMessageType.DebugMessage:
+                        Console.WriteLine("Debug Message: " + msg.ReadString());
+                        break;
+                    case NetIncomingMessageType.WarningMessage:
+                        Console.WriteLine("Warning Message: " + msg.ReadString());
+                        break;
+                    case NetIncomingMessageType.ErrorMessage:
+                        Console.WriteLine("Error Message: " + msg.ReadString());
+                        break;
+                    #endregion
+
+                    #region Read Data
+                    case NetIncomingMessageType.Data:
+                        switch ((PacketType)msg.SequenceChannel)
+                        {
+                            #region Controller State Update
+                            case PacketType.ControllerStateUpdate:
+                                Int64 inPlayerId = msg.ReadInt64();
+                                foreach (PlayerObj player in GameObjectHandler.PlayerObjList)
+                                {
+                                    if (player.PlayerID == inPlayerId)
+                                    {
+                                        UInt16 ctrlState = msg.ReadUInt16();
+                                        player.ControllerState.setControlStateAsInt16(ctrlState);
+                                        break;
+                                    }
+                                }
+                                break;
+                            #endregion
+
+                            #region Add Player
+                            case PacketType.AddPlayerObj:
+                                //Adds an object to the game as the type which was sent
+                                GameObjectHandler.DirectAddObject((PlayerObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + msg.ReadString())));
+
+                                //Initializes the Object
+                                GameObjectHandler.PlayerObjList.Last.Value.NetInitialize(msg);
+                                break;
+                            #endregion
+
+                            #region Add Hazard
+                            case PacketType.AddHazardObj:
+                                //Adds an object to the game as the type which was sent
+                                GameObjectHandler.DirectAddObject((HazardObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + msg.ReadString())));
+
+                                //Initializes the Object
+                                GameObjectHandler.HazardObjList.Last.Value.NetInitialize(msg);
+                                break;
+                            #endregion
+
+                            #region Add Item
+                            case PacketType.AddItemObj:
+                                //Adds an object to the game as the type which was sent
+                                GameObjectHandler.DirectAddObject((ItemObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + msg.ReadString())));
+
+                                //Initializes the Object
+                                GameObjectHandler.ItemObjList.Last.Value.NetInitialize(msg);
+                                break;
+                            #endregion
+
+                            #region Add Special EnvironmentalObj
+                            case PacketType.AddSpecialEnvironmentalObj:
+                                GameObjectHandler.DirectAddObject((SpecialEnvironmentalObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + msg.ReadString())));
+
+                                //Initializes the Object
+                                GameObjectHandler.SpecialEnvironmentalObjList.Last.Value.NetInitialize(msg);
+                                break;
+                            #endregion
+
+                            #region Add EnvironmentalObj
+                            case PacketType.AddEnvironmentalObj:
+                                GameObjectHandler.DirectAddObject((EnvironmentalObj)Activator.CreateInstance(Type.GetType("AnimeFightClub001." + msg.ReadString())));
+
+                                //Initializes the Object
+                                GameObjectHandler.EnvironmentalObjList.Last.Value.NetInitialize(msg);
+                                break;
+                            #endregion
+
+                            #region Object State Update
+                            case PacketType.ObjectStateUpdate:
+                                break;
+                            #endregion
+
+                            #region Position Update
+                            case PacketType.PositionUpdate:
+                                #region Update PlayerObj Pos
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    TestPlayerObjIDBuffer.Add(msg.ReadUInt16()); //Get the current objID
+                                     TestPlayerPosBuffer.Add(new Vector2(msg.ReadFloat(), msg.ReadFloat()));
+                                }
+                                #endregion
+
+                                #region Update HazardObj Pos
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (HazardObj hazard in GameObjectHandler.HazardObjList)
+                                    {
+                                        if (hazard.ObjectID == objID)
+                                        {
+                                            hazard.PhysicsObj.PosX = msg.ReadFloat();
+                                            hazard.PhysicsObj.PosY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update EnvironmentalObj Pos
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (EnvironmentalObj environmentalObj in GameObjectHandler.EnvironmentalObjList)
+                                    {
+                                        if (environmentalObj.ObjectID == objID)
+                                        {
+                                            environmentalObj.PhysicsObj.PosX = msg.ReadFloat();
+                                            environmentalObj.PhysicsObj.PosY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update Speical EnvironmentalObj Pos
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (SpecialEnvironmentalObj specialEnvironmentalObj in GameObjectHandler.SpecialEnvironmentalObjList)
+                                    {
+                                        if (specialEnvironmentalObj.ObjectID == objID)
+                                        {
+                                            specialEnvironmentalObj.PhysicsObj.PosX = msg.ReadFloat();
+                                            specialEnvironmentalObj.PhysicsObj.PosY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update ItemObj Pos
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (ItemObj item in GameObjectHandler.ItemObjList)
+                                    {
+                                        if (item.ObjectID == objID)
+                                        {
+                                            item.PhysicsObj.PosX = msg.ReadFloat();
+                                            item.PhysicsObj.PosY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                break;
+                            #endregion
+
+                            #region Velocity Update
+                            case PacketType.VelocityUpdate:
+
+                                #region Update PlayerObj Vel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (PlayerObj player in GameObjectHandler.PlayerObjList)
+                                    {
+                                        if (player.ObjectID == objID)
+                                        {
+                                            player.PhysicsObj.VelX = msg.ReadFloat();
+                                            player.PhysicsObj.VelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update HazardObj Vel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (HazardObj hazard in GameObjectHandler.HazardObjList)
+                                    {
+                                        if (hazard.ObjectID == objID)
+                                        {
+                                            hazard.PhysicsObj.VelX = msg.ReadFloat();
+                                            hazard.PhysicsObj.VelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update EnvironmentalObj Vel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (EnvironmentalObj environmentalObj in GameObjectHandler.EnvironmentalObjList)
+                                    {
+                                        if (environmentalObj.ObjectID == objID)
+                                        {
+                                            environmentalObj.PhysicsObj.VelX = msg.ReadFloat();
+                                            environmentalObj.PhysicsObj.VelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update Speical EnvironmentalObj Vel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (SpecialEnvironmentalObj specialEnvironmentalObj in GameObjectHandler.SpecialEnvironmentalObjList)
+                                    {
+                                        if (specialEnvironmentalObj.ObjectID == objID)
+                                        {
+                                            specialEnvironmentalObj.PhysicsObj.VelX = msg.ReadFloat();
+                                            specialEnvironmentalObj.PhysicsObj.VelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update ItemObj Vel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (ItemObj item in GameObjectHandler.ItemObjList)
+                                    {
+                                        if (item.ObjectID == objID)
+                                        {
+                                            item.PhysicsObj.VelX = msg.ReadFloat();
+                                            item.PhysicsObj.VelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                break;
+                            #endregion
+
+                            #region Acceleration Update
+                            case PacketType.AccelerationUpdate:
+
+                                #region Update PlayerObj Accel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (PlayerObj player in GameObjectHandler.PlayerObjList)
+                                    {
+                                        if (player.ObjectID == objID)
+                                        {
+                                            player.PhysicsObj.AccelX = msg.ReadFloat();
+                                            player.PhysicsObj.AccelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update HazardObj Accel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (HazardObj hazard in GameObjectHandler.HazardObjList)
+                                    {
+                                        if (hazard.ObjectID == objID)
+                                        {
+                                            hazard.PhysicsObj.AccelX = msg.ReadFloat();
+                                            hazard.PhysicsObj.AccelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update EnvironmentalObj Accel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (EnvironmentalObj environmentalObj in GameObjectHandler.EnvironmentalObjList)
+                                    {
+                                        if (environmentalObj.ObjectID == objID)
+                                        {
+                                            environmentalObj.PhysicsObj.AccelX = msg.ReadFloat();
+                                            environmentalObj.PhysicsObj.AccelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update Speicla EnvironmentalObj Accel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (SpecialEnvironmentalObj specialEnvironmentalObj in GameObjectHandler.SpecialEnvironmentalObjList)
+                                    {
+                                        if (specialEnvironmentalObj.ObjectID == objID)
+                                        {
+                                            specialEnvironmentalObj.PhysicsObj.AccelX = msg.ReadFloat();
+                                            specialEnvironmentalObj.PhysicsObj.AccelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region Update ItemObj Accel
+                                count = msg.ReadUInt32();
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    objID = msg.ReadUInt16(); //Get the current objID
+                                    foreach (ItemObj item in GameObjectHandler.ItemObjList)
+                                    {
+                                        if (item.ObjectID == objID)
+                                        {
+                                            item.PhysicsObj.AccelX = msg.ReadFloat();
+                                            item.PhysicsObj.AccelY = msg.ReadFloat();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                break;
+                            #endregion
+                        }
+                        break;
+                    #endregion
+
+                    case NetIncomingMessageType.DiscoveryRequest:
+
+                    default:
+                        Console.WriteLine("Unhandled type: " + msg.MessageType);
+                        break;
+                }
+                m_client.Recycle(msg);
+            }
+            #endregion
+        }
+
+
+        //****************************************************
+        // Method: SendControllerStateUpdate
+        //
+        // Purpose: Sends the state of a player's gamepad
+        // to every other player
+        //****************************************************
+        static public void SendControllerStateUpdate(UInt16 controllerState)
+        {
+            NetOutgoingMessage sendMsg = m_client.CreateMessage();
+            sendMsg.Write((byte)PacketType.ControllerStateUpdate);
+            sendMsg.Write(controllerState);
+            m_client.SendMessage(sendMsg, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+
+        //****************************************************
+        // Method: ConnectToMasterServer
+        //
+        // Purpose: Connects to the master server
+        //****************************************************
+        static public void ConnectToMasterServer()
+        {
+        }
+    }
+}

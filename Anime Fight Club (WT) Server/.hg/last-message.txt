@@ -1,0 +1,2 @@
+-Fixed some bugs that caused crash
+ (mainly involving throwing a bomb and disconnecting)

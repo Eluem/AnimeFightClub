@@ -1,0 +1,1261 @@
+﻿//******************************************************
+// File: GameObjectHandler.cs
+//
+// Purpose: Contains the definition of the
+// GameObjectHandler. An instance of this object
+// will be definied in the main game class and will
+// be used to handle all updates and object
+// interactions.
+//
+// Written By: Salvatore Hanusiewicz
+//******************************************************
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Storage;
+using Lidgren.Network;
+
+namespace AnimeFightClub001
+{
+    static class GameObjectHandler
+    {
+        #region Declarations
+        //***************************************************************************************************************************
+        //NOTE: Eventually I'd like to replace the useage of these lists with my own class/struct that uses an array of X elements
+        //to store objects. Deletion will be completed by marking the object as deleted. When and update or collide code gets
+        //to it, it'll be skipped (slightly inefficent). Any deleted object will have it's index added to another list. This list
+        //will be used to determine where to place the next added object. If the overwriteable index list is empty, the object goes
+        //to the last open slot. If the list isn't empty, it is inserted into the index that is stored in the last slot of the
+        //overwriteable index list
+        //***************************************************************************************************************************
+
+
+        //Lists that store all the different types of objects in the game
+        static private LinkedList<PlayerObj> m_playerObjList = new LinkedList<PlayerObj>();
+        static private LinkedList<HazardObj> m_hazardObjList = new LinkedList<HazardObj>();
+        static private LinkedList<EnvironmentalObj> m_environmentalObjList = new LinkedList<EnvironmentalObj>();
+        static private LinkedList<SpecialEnvironmentalObj> m_specialEnvironmentalObjList = new LinkedList<SpecialEnvironmentalObj>();
+        static private LinkedList<ItemObj> m_itemObjList = new LinkedList<ItemObj>();
+        static private LinkedList<BasicObj> m_basicObjList = new LinkedList<BasicObj>(); //Not likely to be used
+
+        //Lists that are used to delete objects from the corresponding object lists
+        static private LinkedList<PlayerObj> m_playerObjDeleteList = new LinkedList<PlayerObj>();
+        static private LinkedList<HazardObj> m_hazardObjDeleteList = new LinkedList<HazardObj>();
+        static private LinkedList<EnvironmentalObj> m_environmentalObjDeleteList = new LinkedList<EnvironmentalObj>();
+        static private LinkedList<SpecialEnvironmentalObj> m_specialEnvironmentalObjDeleteList = new LinkedList<SpecialEnvironmentalObj>();
+        static private LinkedList<ItemObj> m_itemObjDeleteList = new LinkedList<ItemObj>();
+        static private LinkedList<BasicObj> m_basicObjDeleteList = new LinkedList<BasicObj>(); //Not likely to be used
+
+        //Lists that are used to add objects to the corresponding object lists
+        static private LinkedList<PlayerObj> m_playerObjAddList = new LinkedList<PlayerObj>();
+        static private LinkedList<HazardObj> m_hazardObjAddList = new LinkedList<HazardObj>();
+        static private LinkedList<EnvironmentalObj> m_environmentalObjAddList = new LinkedList<EnvironmentalObj>();
+        static private LinkedList<SpecialEnvironmentalObj> m_specialEnvironmentalObjAddList = new LinkedList<SpecialEnvironmentalObj>();
+        static private LinkedList<ItemObj> m_itemObjAddList = new LinkedList<ItemObj>();
+        static private LinkedList<BasicObj> m_basicObjAddList = new LinkedList<BasicObj>(); //Not likely to be used
+
+        static private PlayerObj m_localPlayer;
+
+        static private Camera2D m_trackingCamera = new Camera2D();
+
+        #endregion
+
+        //****************************************************
+        // Method: Update
+        //
+        // Purpose: Updates all the objects in the game
+        // and checks for collisions.
+        //****************************************************
+        static public void Update(GameTime gameTime, Viewport viewport)
+        {
+            #region Get/Apply Networking Updates
+            #endregion
+
+            #region Add All Objects Scheduled To Be Added
+            foreach (PlayerObj player in m_playerObjAddList)
+            {
+                m_playerObjList.AddLast(player);
+            }
+
+            foreach (HazardObj hazard in m_hazardObjAddList)
+            {
+                m_hazardObjList.AddLast(hazard);
+            }
+
+            foreach (EnvironmentalObj environmentalObj in m_environmentalObjAddList)
+            {
+                m_environmentalObjList.AddLast(environmentalObj);
+            }
+
+            foreach (SpecialEnvironmentalObj specialEnvironmentalObj in m_specialEnvironmentalObjAddList)
+            {
+                m_specialEnvironmentalObjList.AddLast(specialEnvironmentalObj);
+            }
+            foreach (ItemObj item in m_itemObjAddList)
+            {
+                m_itemObjList.AddLast(item);
+            }
+
+            m_playerObjAddList.Clear();
+            m_hazardObjAddList.Clear();
+            m_environmentalObjAddList.Clear();
+            m_specialEnvironmentalObjAddList.Clear();
+            m_itemObjAddList.Clear();
+            #endregion
+
+            #region Delete All Objects Scheduled To Be Deleted
+            foreach (PlayerObj player in m_playerObjDeleteList)
+            {
+                m_playerObjList.Remove(player);
+            }
+
+            foreach (HazardObj hazard in m_hazardObjDeleteList)
+            {
+                m_hazardObjList.Remove(hazard);
+            }
+
+            foreach (EnvironmentalObj environmentalObj in m_environmentalObjDeleteList)
+            {
+                m_environmentalObjList.Remove(environmentalObj);
+            }
+
+            foreach (SpecialEnvironmentalObj specialEnvironmentalObj in m_specialEnvironmentalObjDeleteList)
+            {
+                m_specialEnvironmentalObjList.Remove(specialEnvironmentalObj);
+            }
+            foreach (ItemObj item in m_itemObjDeleteList)
+            {
+                m_itemObjList.Remove(item);
+            }
+
+            m_playerObjDeleteList.Clear();
+            m_hazardObjDeleteList.Clear();
+            m_environmentalObjDeleteList.Clear();
+            m_specialEnvironmentalObjDeleteList.Clear();
+            m_itemObjDeleteList.Clear();
+            #endregion
+
+            #region Update All Object Types
+            foreach (PlayerObj player in m_playerObjList)
+            {
+                player.Update(gameTime, viewport);
+            }
+
+            foreach (HazardObj hazard in m_hazardObjList)
+            {
+                hazard.Update(gameTime, viewport);
+            }
+
+            foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+            {
+                environmentalObj.Update(gameTime, viewport);
+            }
+
+            foreach (SpecialEnvironmentalObj specialEnvironmentalObj in m_specialEnvironmentalObjList)
+            {
+                specialEnvironmentalObj.Update(gameTime, viewport);
+            }
+            foreach (ItemObj item in m_itemObjList)
+            {
+                item.Update(gameTime, viewport);
+            }
+            #endregion
+
+
+            if (NetworkingHandler.TestPlayerObjIDBuffer.Count > 0)
+            {
+                for (int i = 0; i < NetworkingHandler.TestPlayerObjIDBuffer.Count; ++i)
+                {
+                    foreach (PlayerObj player in GameObjectHandler.PlayerObjList)
+                    {
+                        if (player.ObjectID == NetworkingHandler.TestPlayerObjIDBuffer[i])
+                        {
+                            float tempX = NetworkingHandler.TestPlayerPosBuffer[i].X;
+                            float tempY = NetworkingHandler.TestPlayerPosBuffer[i].Y;
+
+                            if (player.ObjectID == LocalPlayer.ObjectID)
+                            {
+                                System.Console.WriteLine("LAG(ObjID:" + player.ObjectID + ", Time: " + NetworkingHandler.m_client.ServerConnection.AverageRoundtripTime * 1000 + "): " + (tempX - player.PhysicsObj.Pos.X) + ", " + Math.Abs(tempY - player.PhysicsObj.Pos.Y));
+                            }
+
+                            player.PhysicsObj.PosX = tempX;
+                            player.PhysicsObj.PosY = tempY;
+                            break;
+                        }
+                    }
+                }
+                NetworkingHandler.TestPlayerObjIDBuffer.Clear();
+                NetworkingHandler.TestPlayerPosBuffer.Clear();
+            }
+
+            #region Checks For And Applies All Collisions
+            //*******************************************************************************************
+            // Loop Logic Explanation: 
+            // The outer loop for every object type loops through all the objects in the specified list
+            // (excluding the last element due to the combinumetrics) and will check to the objects in
+            // the inner loop. When collide checking an object type to itself you need to use a pointer
+            // to store the first element which should be looped through.
+            // This element should be incremented to the second element immediately.
+            // Then, a second pointer should be set equal to it and should be used to loop through
+            // the rest of the objects. On the next loop through, the pointer which is pointing to the
+            // first element of the inner loop should be incremented and the process should be repeated.
+            // This is done to prevent having objects collide check themselves.
+            //*******************************************************************************************
+            Vector2 overLap = new Vector2(); //Used to pass the overlap from function to function
+            int currentElement; //Used to prevent the outer loop from collide checking the last element
+
+            #region SpecialEnvironmentalObj Colllision Loop
+            //Used to point to the first element in the inner loop
+            LinkedListNode<SpecialEnvironmentalObj> firstInnerSpecialEnvironmentalObj = null;
+            if (m_specialEnvironmentalObjList.Count > 1)
+                firstInnerSpecialEnvironmentalObj = m_specialEnvironmentalObjList.First.Next;
+            //Used to point to the current element in the inner loop
+            LinkedListNode<SpecialEnvironmentalObj> currentInnerSpecialEnvironmentalObj;
+
+            currentElement = 0;
+            foreach (SpecialEnvironmentalObj specialEnvironmentalObj in m_specialEnvironmentalObjList)
+            {
+                #region SpecialEnvironmentalObj to SpecialEnvironmentalObj
+                //Loop through all other objects in this list
+                if (currentElement + 1 < m_specialEnvironmentalObjList.Count)
+                {
+                    currentInnerSpecialEnvironmentalObj = firstInnerSpecialEnvironmentalObj;
+
+                    for (int currentInnerElement = currentElement + 1; currentInnerElement < m_specialEnvironmentalObjList.Count; ++currentInnerElement)
+                    {
+                        if (CollideCheck(specialEnvironmentalObj.PhysicsObj, currentInnerSpecialEnvironmentalObj.Value.PhysicsObj, ref overLap))
+                        {
+                            //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                            specialEnvironmentalObj.Collide(currentInnerSpecialEnvironmentalObj.Value);
+                            currentInnerSpecialEnvironmentalObj.Value.Collide(specialEnvironmentalObj);
+
+                            //Transfer momentum
+                            MomentumTransfer(specialEnvironmentalObj.PhysicsObj, currentInnerSpecialEnvironmentalObj.Value.PhysicsObj, overLap, gameTime);
+                        }
+                        currentInnerSpecialEnvironmentalObj = currentInnerSpecialEnvironmentalObj.Next;
+                    }
+
+                    firstInnerSpecialEnvironmentalObj = firstInnerSpecialEnvironmentalObj.Next;
+                }
+                #endregion
+
+                #region SpecialEnvironmentalObj to PlayerObj
+                foreach (PlayerObj player in m_playerObjList)
+                {
+                    if (CollideCheck(specialEnvironmentalObj.PhysicsObj, player.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        specialEnvironmentalObj.Collide(player);
+                        player.Collide(specialEnvironmentalObj);
+
+                        //Transfer momentum
+                        MomentumTransfer(specialEnvironmentalObj.PhysicsObj, player.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region SpecialEnvironmentalObj to ItemObj
+                foreach (ItemObj item in m_itemObjList)
+                {
+                    if (CollideCheck(specialEnvironmentalObj.PhysicsObj, item.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        specialEnvironmentalObj.Collide(item);
+                        item.Collide(specialEnvironmentalObj);
+
+                        //Transfer momentum
+                        MomentumTransfer(specialEnvironmentalObj.PhysicsObj, item.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region SpecialEnvironmentalObj to HazardObj
+                foreach (HazardObj hazard in m_hazardObjList)
+                {
+                    if (CollideCheck(specialEnvironmentalObj.PhysicsObj, hazard.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        specialEnvironmentalObj.Collide(hazard);
+                        hazard.Collide(specialEnvironmentalObj);
+
+                        //Transfer momentum
+                        MomentumTransfer(specialEnvironmentalObj.PhysicsObj, hazard.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region SpecialEnvironmentalObj to EnvironmentalObj
+                foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+                {
+                    if (CollideCheck(specialEnvironmentalObj.PhysicsObj, environmentalObj.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        specialEnvironmentalObj.Collide(environmentalObj);
+                        environmentalObj.Collide(specialEnvironmentalObj);
+
+                        //Transfer momentum
+                        MomentumTransfer(specialEnvironmentalObj.PhysicsObj, environmentalObj.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+
+                ++currentElement;
+            }
+            #endregion
+
+            #region ItemObj Colllision Loop
+            //Used to point to the first element in the inner loop
+            LinkedListNode<ItemObj> firstInnerItemObj = null;
+            if (m_itemObjList.Count > 1)
+                firstInnerItemObj = m_itemObjList.First.Next;
+
+            //Used to point to the current element in the inner loop
+            LinkedListNode<ItemObj> currentInnerItemObj;
+
+            currentElement = 0;
+            foreach (ItemObj item in m_itemObjList)
+            {
+                #region ItemObj to ItemObj
+                //Loop through all other objects in this list
+                if (currentElement + 1 < m_itemObjList.Count)
+                {
+                    currentInnerItemObj = firstInnerItemObj;
+                    for (int currentInnerElement = currentElement + 1; currentInnerElement < m_itemObjList.Count; ++currentInnerElement)
+                    {
+                        if (CollideCheck(item.PhysicsObj, currentInnerItemObj.Value.PhysicsObj, ref overLap))
+                        {
+                            //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                            item.Collide(currentInnerItemObj.Value);
+                            currentInnerItemObj.Value.Collide(item);
+
+                            //Transfer momentum
+                            MomentumTransfer(item.PhysicsObj, currentInnerItemObj.Value.PhysicsObj, overLap, gameTime);
+                        }
+                        currentInnerItemObj = currentInnerItemObj.Next;
+                    }
+
+                    firstInnerItemObj = firstInnerItemObj.Next;
+                }
+                #endregion
+
+                #region ItemObj to PlayerObj
+                foreach (PlayerObj player in m_playerObjList)
+                {
+                    if (CollideCheck(item.PhysicsObj, player.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        item.Collide(player);
+                        player.Collide(item);
+
+                        //Transfer momentum
+                        MomentumTransfer(item.PhysicsObj, player.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region ItemObj to HazardObj
+                foreach (HazardObj hazard in m_hazardObjList)
+                {
+                    if (CollideCheck(item.PhysicsObj, hazard.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        item.Collide(hazard);
+                        hazard.Collide(item);
+
+                        //Transfer momentum
+                        MomentumTransfer(item.PhysicsObj, hazard.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region ItemObj to EnvironmentalObj
+                foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+                {
+                    if (CollideCheck(item.PhysicsObj, environmentalObj.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        item.Collide(environmentalObj);
+                        environmentalObj.Collide(item);
+
+                        //Transfer momentum
+                        MomentumTransfer(item.PhysicsObj, environmentalObj.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+
+                ++currentElement;
+            }
+            #endregion
+
+            #region PlayerObj Colllision Loop
+            //Used to point to the first element in the inner loop
+            LinkedListNode<PlayerObj> firstInnerPlayerObj = null;
+            if (m_playerObjList.Count > 1)
+                firstInnerPlayerObj = m_playerObjList.First.Next;
+
+            //Used to point to the current element in the inner loop
+            LinkedListNode<PlayerObj> currentInnerPlayerObj;
+
+            currentElement = 0;
+            foreach (PlayerObj player in m_playerObjList)
+            {
+                #region PlayerObj to PlayerObj
+                //Loop through all other objects in this list
+                if (currentElement + 1 < m_playerObjList.Count)
+                {
+                    currentInnerPlayerObj = firstInnerPlayerObj;
+                    for (int currentInnerElement = currentElement + 1; currentInnerElement < m_playerObjList.Count; ++currentInnerElement)
+                    {
+                        if (CollideCheck(player.PhysicsObj, currentInnerPlayerObj.Value.PhysicsObj, ref overLap))
+                        {
+                            //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                            player.Collide(currentInnerPlayerObj.Value);
+                            currentInnerPlayerObj.Value.Collide(player);
+
+                            //Transfer momentum
+                            MomentumTransfer(player.PhysicsObj, currentInnerPlayerObj.Value.PhysicsObj, overLap, gameTime);
+                        }
+                        currentInnerPlayerObj = currentInnerPlayerObj.Next;
+                    }
+
+                    firstInnerPlayerObj = firstInnerPlayerObj.Next;
+                }
+                #endregion
+
+                #region PlayerObj to HazardObj
+                foreach (HazardObj hazard in m_hazardObjList)
+                {
+                    if (CollideCheck(player.PhysicsObj, hazard.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        player.Collide(hazard);
+                        hazard.Collide(player);
+
+                        //Transfer momentum
+                        MomentumTransfer(player.PhysicsObj, hazard.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                #region PlayerObj to EnvironmentalObj
+                foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+                {
+                    if (CollideCheck(player.PhysicsObj, environmentalObj.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        player.Collide(environmentalObj);
+                        environmentalObj.Collide(player);
+
+                        //Transfer momentum
+                        MomentumTransfer(player.PhysicsObj, environmentalObj.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+
+                ++currentElement;
+            }
+            #endregion
+
+            #region HazardObj Colllision Loop
+
+            #region Part of Hazard on Hazard Collision Detection, Uncomment to enable (remove region as well)
+            /*
+            //Used to point to the first element in the inner loop
+            LinkedListNode<HazardObj> firstInnerHazardObj = null;
+            if(m_hazardObjList.Count > 1)
+            firstInnerHazardObj = m_hazardObjList.First.Next;
+
+            //Used to point to the current element in the inner loop
+            LinkedListNode<HazardObj> currentInnerHazardObj;
+
+            currentElement = 0;
+            */
+            #endregion
+            foreach (HazardObj hazard in m_hazardObjList)
+            {
+                #region HazardObj to HazardObj
+                //Commented out to disable Hazard on Hazard Collisions
+                /*
+                //Loop through all other objects in this list
+                if (currentElement + 1 < m_hazardObjList.Count)
+                {
+                    currentInnerHazardObj = firstInnerHazardObj;
+                    for (int currentInnerElement = currentElement + 1; currentInnerElement < m_hazardObjList.Count; ++currentInnerElement)
+                    {
+                        if (CollideCheck(hazard.PhysicsObj, currentInnerHazardObj.Value.PhysicsObj, ref overLap))
+                        {
+                            //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                            hazard.Collide(currentInnerHazardObj.Value);
+                            currentInnerHazardObj.Value.Collide(hazard);
+
+                            //Transfer momentum
+                            MomentumTransfer(hazard.PhysicsObj, currentInnerHazardObj.Value.PhysicsObj, overLap, gameTime);
+                        }
+                        currentInnerHazardObj = currentInnerHazardObj.Next;
+                    }
+
+                    firstInnerHazardObj = firstInnerHazardObj.Next;
+                }
+                */
+                #endregion
+
+                #region HazardObj to EnvironmentalObj
+                foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+                {
+                    if (CollideCheck(hazard.PhysicsObj, environmentalObj.PhysicsObj, ref overLap))
+                    {
+                        //Tell objects that they collided with each other (add DeepCloning to keep consistency?)
+                        hazard.Collide(environmentalObj);
+                        environmentalObj.Collide(hazard);
+
+                        //Transfer momentum
+                        MomentumTransfer(hazard.PhysicsObj, environmentalObj.PhysicsObj, overLap, gameTime);
+                    }
+                }
+                #endregion
+
+                ++currentElement;
+            }
+            #endregion
+
+            #endregion
+        }
+
+
+        //****************************************************
+        // Method: Draw
+        //
+        // Purpose: Draws all the objects
+        //****************************************************
+        static public void Draw(SpriteBatch spriteBatch)
+        {
+            #region Draw All Object Types
+            foreach (PlayerObj player in m_playerObjList)
+            {
+                player.DrawableObj.Draw(spriteBatch);
+            }
+
+            foreach (HazardObj hazard in m_hazardObjList)
+            {
+                hazard.DrawableObj.Draw(spriteBatch);
+            }
+
+            foreach (EnvironmentalObj environmentalObj in m_environmentalObjList)
+            {
+                environmentalObj.DrawableObj.Draw(spriteBatch);
+            }
+
+            foreach (SpecialEnvironmentalObj specialEnvironmentalObj in m_specialEnvironmentalObjList)
+            {
+                specialEnvironmentalObj.DrawableObj.Draw(spriteBatch);
+            }
+            foreach (ItemObj item in m_itemObjList)
+            {
+                item.DrawableObj.Draw(spriteBatch);
+            }
+            #endregion
+        }
+
+
+        //****************************************************
+        // Method: LoadMap
+        //
+        // Purpose: Loads the selected map
+        //****************************************************
+        static public void LoadMap(string mapName)
+        {
+        }
+
+        #region Add Object Functions
+        #region AddObject Functions
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds a player
+        // to the m_playerObjAddList
+        //****************************************************
+        static public void AddObject(PlayerObj player)
+        {
+            m_playerObjAddList.AddLast(player);
+        }
+
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds a hazard
+        // to the m_hazardObjAddList
+        //****************************************************
+        static public void AddObject(HazardObj hazard)
+        {
+            m_hazardObjAddList.AddLast(hazard);
+        }
+
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds
+        // an environmental object to the
+        // m_environmentalObjAddList
+        //****************************************************
+        static public void AddObject(EnvironmentalObj environmentalObj)
+        {
+            m_environmentalObjAddList.AddLast(environmentalObj);
+        }
+
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds a 
+        // special environmental object
+        // to the m_specialEnvironmentalObjAddList
+        //****************************************************
+        static public void AddObject(SpecialEnvironmentalObj specialEnvironmentalObj)
+        {
+            m_specialEnvironmentalObjAddList.AddLast(specialEnvironmentalObj);
+        }
+
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds an item
+        // to the m_itemObjAddList
+        //****************************************************
+        static public void AddObject(ItemObj item)
+        {
+            m_itemObjAddList.AddLast(item);
+        }
+
+        //****************************************************
+        // Method: AddObject
+        //
+        // Purpose: Overload of AddObject which adds an item
+        // to the m_basicObjAddList (unlikely to use)
+        //****************************************************
+        static public void AddObject(BasicObj basicObj)
+        {
+            m_basicObjAddList.AddLast(basicObj);
+        }
+
+        #endregion
+
+        #region DirectAddObject Functions
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds a player
+        // to the m_playerObjList
+        //**********************************************************
+        static public void DirectAddObject(PlayerObj player)
+        {
+            m_playerObjList.AddLast(player);
+        }
+
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds a hazard
+        // to the m_hazardObjList
+        //**********************************************************
+        static public void DirectAddObject(HazardObj hazard)
+        {
+            m_hazardObjList.AddLast(hazard);
+        }
+
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds
+        // an environmental object to the
+        // m_environmentalObjAddList
+        //**********************************************************
+        static public void DirectAddObject(EnvironmentalObj environmentalObj)
+        {
+            m_environmentalObjList.AddLast(environmentalObj);
+        }
+
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds a 
+        // special environmental object
+        // to the m_specialEnvironmentalObjList
+        //**********************************************************
+        static public void DirectAddObject(SpecialEnvironmentalObj specialEnvironmentalObj)
+        {
+            m_specialEnvironmentalObjList.AddLast(specialEnvironmentalObj);
+        }
+
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds an item
+        // to the m_itemObjList
+        //**********************************************************
+        static public void DirectAddObject(ItemObj item)
+        {
+            m_itemObjList.AddLast(item);
+        }
+
+        //**********************************************************
+        // Method: DirectAddObject
+        //
+        // Purpose: Overload of DirectAddObject which adds an item
+        // to the m_basicObjList (unlikely to use)
+        //**********************************************************
+        static public void DirectAddObject(BasicObj basicObj)
+        {
+            m_basicObjList.AddLast(basicObj);
+        }
+
+        #endregion
+        #endregion
+
+        #region Delete Object Functions
+        #region DeleteObject Functions
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds a
+        // player to the m_playerObjDeleteList
+        //****************************************************
+        static public void DeleteObject(PlayerObj player)
+        {
+            m_playerObjDeleteList.AddLast(player);
+        }
+
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds a
+        // hazard to the m_hazardObjDeleteList
+        //****************************************************
+        static public void DeleteObject(HazardObj hazard)
+        {
+            m_hazardObjDeleteList.AddLast(hazard);
+        }
+
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds
+        // an environmental object to the
+        // m_environmentalObjDeleteList
+        //****************************************************
+        static public void DeleteObject(EnvironmentalObj environmentalObj)
+        {
+            m_environmentalObjDeleteList.AddLast(environmentalObj);
+        }
+
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds a 
+        // special environmental object
+        // to the m_specialEnvironmentalObjDeleteList
+        //****************************************************
+        static public void DeleteObject(SpecialEnvironmentalObj specialEnvironmentalObj)
+        {
+            m_specialEnvironmentalObjDeleteList.AddLast(specialEnvironmentalObj);
+        }
+
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds an
+        // item to the m_itemObjDeleteList
+        //****************************************************
+        static public void DeleteObject(ItemObj item)
+        {
+            m_itemObjDeleteList.AddLast(item);
+        }
+
+        //****************************************************
+        // Method: DeleteObject
+        //
+        // Purpose: Overload of DeleteObject which adds an
+        // item to the m_basicObjDeleteList (unlikely to use)
+        //****************************************************
+        static public void DeleteObject(BasicObj basicObj)
+        {
+            m_basicObjDeleteList.AddLast(basicObj);
+        }
+
+        #endregion
+
+        #region DirectDeleteObject Functions
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds a
+        // player to the m_playerObjDeleteList
+        //********************************************************
+        static public void DirectDeleteObject(PlayerObj player)
+        {
+            m_playerObjDeleteList.AddLast(player);
+        }
+
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds a
+        // hazard to the m_hazardObjDeleteList
+        //********************************************************
+        static public void DirectDeleteObject(HazardObj hazard)
+        {
+            m_hazardObjDeleteList.AddLast(hazard);
+        }
+
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds
+        // an environmental object to the
+        // m_environmentalObjDeleteList
+        //********************************************************
+        static public void DirectDeleteObject(EnvironmentalObj environmentalObj)
+        {
+            m_environmentalObjDeleteList.AddLast(environmentalObj);
+        }
+
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds a 
+        // special environmental object
+        // to the m_specialEnvironmentalObjDeleteList
+        //********************************************************
+        static public void DirectDeleteObject(SpecialEnvironmentalObj specialEnvironmentalObj)
+        {
+            m_specialEnvironmentalObjDeleteList.AddLast(specialEnvironmentalObj);
+        }
+
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds an
+        // item to the m_itemObjDeleteList
+        //********************************************************
+        static public void DirectDeleteObject(ItemObj item)
+        {
+            m_itemObjDeleteList.AddLast(item);
+        }
+
+        //********************************************************
+        // Method: DirectDeleteObject
+        //
+        // Purpose: Overload of DirectDeleteObject which adds an
+        // item to the m_basicObjDeleteList (unlikely to use)
+        //********************************************************
+        static public void DirectDeleteObject(BasicObj basicObj)
+        {
+            m_basicObjDeleteList.AddLast(basicObj);
+        }
+
+        #endregion
+        #endregion
+
+        #region Collision Functions
+        //****************************************************
+        // Method: CollideCheck
+        //
+        // Purpose: Checks for collision.
+        //****************************************************
+        static public bool CollideCheck(PhysicsObj obj1, PhysicsObj obj2, ref Vector2 overLap)
+        {
+            //Checks for collision using N Tutorial A (http://www.metanetsoftware.com/technique/tutorialA.html)
+            //Finds how much the rectangles are overlapping, if they are, in the x axis
+            overLap.X = obj1.Rect.Width / 2 + obj2.Rect.Width / 2 - Math.Abs(obj2.Rect.Center.X - obj1.Rect.Center.X);
+            if (overLap.X >= 0) //if the rects do overlap in the x axis then there's more checking to be done
+            {
+                //Finds how much the rectangles are overlapping, if they are, in the y axis
+                overLap.Y = obj1.Rect.Height / 2 + obj2.Rect.Height / 2 - Math.Abs(obj2.Rect.Center.Y - obj1.Rect.Center.Y);
+                if (overLap.Y >= 0)//if the rects overlap in the x and y axis then there is a collision
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //****************************************************
+        // Method: Collide
+        //
+        // Purpose: Handles collision between objects.
+        //****************************************************
+        static public void MomentumTransfer(PhysicsObj obj1, PhysicsObj obj2, Vector2 overLap, GameTime gameTime)
+        {
+            //REQUIRES WORK
+            #region Declarations and Initializations
+            PhysicsObj tempObj1 = obj1.DeepClone();
+            PhysicsObj tempObj2 = obj2.DeepClone();
+
+            Vector2 obj1OverLap = new Vector2(overLap.X, overLap.Y);
+            Vector2 obj2OverLap = new Vector2(overLap.X, overLap.Y);
+
+            Side collisionSide = Side.top; //Used to store the side the collision occured on
+            Axis collisionAxis = Axis.x; //Used to store the axis upon which the collision occured
+            #endregion
+
+            #region Obtain Total Friction
+            //Obtains the total friction between objects
+            //1 removes all speed from the object
+            //0 doesn't affect the object
+            float totalFriction = tempObj1.Friction + tempObj2.Friction;
+            if (totalFriction > 1)
+            {
+                totalFriction = 1F;
+            }
+            if (tempObj1.Friction * tempObj2.Friction == 0)
+            {
+                totalFriction = 0F;
+            }
+            #endregion
+
+            #region Obtain Appliable Over Lap For Object One
+            //*********************************************************************
+            // overLapAppliable is Used to apply only the amount of the overLap
+            // that the object contributed.
+            //*********************************************************************
+            Vector2 obj1OverLapAppliable = new Vector2(Math.Abs(tempObj1.Vel.X) / (Math.Abs(tempObj1.Vel.X) + Math.Abs(tempObj2.Vel.X)), Math.Abs(tempObj1.Vel.Y) / (Math.Abs(tempObj1.Vel.Y) + Math.Abs(tempObj2.Vel.Y)));
+            //Vector2 obj2OverLapAppliable = new Vector2(Math.Abs(tempObj2.Vel.X) / (Math.Abs(tempObj2.Vel.X) + Math.Abs(tempObj1.Vel.X)), Math.Abs(tempObj2.Vel.Y) / (Math.Abs(tempObj2.Vel.Y) + Math.Abs(tempObj1.Vel.Y)));
+            #endregion
+
+            #region Determine Side of Collision
+            //*******************************************************
+            //Used to determine which side the collision occured on
+            //*******************************************************
+            if (tempObj1.Rect.Center != tempObj2.Rect.Center) //Makes sure the objects don't overlap on their center
+            {
+                #region "Correct" Collision Side Detection
+                if (overLap.X < overLap.Y) //The collision occured on the x axis
+                {
+                    collisionAxis = Axis.x; //Sets the axis of collision to x
+
+                    if (tempObj1.Rect.Center.X < tempObj2.Rect.Center.X) //obj1 hit the left side of obj2
+                    {
+                        collisionSide = Side.left;
+                    }
+                    else //obj1 hit the right side of obj2
+                    {
+                        collisionSide = Side.right;
+                    }
+
+                }
+                else //collision occured on y axis
+                {
+                    collisionAxis = Axis.y; //Sets the axis of collision to y
+
+                    if (tempObj1.Rect.Center.Y < tempObj2.Rect.Center.Y) //obj1 landed on top of obj2
+                    {
+                        collisionSide = Side.top;
+                    }
+
+                    else //obj1 hit the bottom of obj2
+                    {
+                        collisionSide = Side.bottom;
+                    }
+                }
+                #endregion
+            }
+
+            else //If the objects have the same exact center position something different needs to be done
+            {
+                #region Cludge Collision Side Detection
+                //As long as the object's previous position isn't the same as its current position
+                //this should work
+                if ((int)tempObj1.PrevPos.X != (int)tempObj2.PrevPos.X && (int)tempObj1.PrevPos.Y != (int)tempObj2.PrevPos.Y)
+                {
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.Pos = obj1.PrevPos;
+                    }
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.Pos = obj2.PrevPos;
+                    }
+                }
+                //Moves the object in a "random" direction by 1
+                //Useful if objects are spawned directly on each other
+                else
+                {
+                    switch (GlobalVariables.Randomizer.Next(0, 4))
+                    {
+                        case 0:
+                            collisionAxis = Axis.y;
+                            collisionSide = Side.top;
+                            break;
+                        case 1:
+                            collisionSide = Side.bottom;
+                            collisionAxis = Axis.y;
+                            break;
+                        case 2:
+                            collisionSide = Side.right;
+                            collisionAxis = Axis.x;
+                            break;
+                        case 3:
+                            collisionSide = Side.left;
+                            collisionAxis = Axis.x;
+                            break;
+                    }
+                }
+                #endregion
+
+            }
+            #endregion
+
+            #region Apply Collisions
+            //******************
+            // Apply collisions
+            //******************
+            #region X Axis Collision
+            if (collisionAxis == Axis.x)
+            {
+                #region Apply Overlap
+                //************************************************************************************************
+                //Applies overLapAppliable to the overLap for the x axis if and only if the calculation succeeded
+                //otherwise the overLap is applied in full because of the fact that, for the overLapAppliable
+                //to fail its equation, both objects need a 0 speed. Thus, the descrepency in movement would
+                //either not exist or be so miniscule that it does not matter.
+                //************************************************************************************************
+                if (!obj1OverLapAppliable.X.Equals(float.NaN))
+                {
+                    obj1OverLap.X *= obj1OverLapAppliable.X;
+                    obj2OverLap.X *= 1 - obj1OverLapAppliable.X;
+                }
+
+                if (collisionSide == Side.left)
+                {
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.PosX -= obj1OverLap.X; //Moves the object out of the other object by the correct amount
+                    }
+                    obj1.Sided[Side.right] = true;
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.PosX += obj2OverLap.X; //Moves the object out of the other object by the correct amount
+                    }
+                    obj2.Sided[Side.left] = true;
+                }
+                else
+                {
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.PosX += obj1OverLap.X; //Moves the object out of the other object by the correct amount
+                    }
+                    obj1.Sided[Side.left] = true;
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.PosX -= obj2OverLap.X; //Moves the object out of the other object by the correct amount
+                    }
+                    obj2.Sided[Side.right] = true;
+                }
+                #endregion
+
+                #region Set Previous X Velocity
+                obj1.PrevVelX = obj1.Vel.X; //Stores the velocity of the object before the collision occurs
+                obj2.PrevVelX = obj2.Vel.X; //Stores the velocity of the object before the collision occurs
+                #endregion
+
+                #region Conserve Momentum
+                //Everything in here should on occur during an overlap
+                //(somethings should occur when there's no overlap but the objects are next to each other"
+                if (overLap.X > 0 && !(collisionSide == Side.left && tempObj1.Vel.X < 0 && tempObj2.Vel.X > tempObj1.Vel.X) && !(collisionSide == Side.right && tempObj1.Vel.X > 0 && tempObj2.Vel.X < tempObj1.Vel.X) && !(collisionSide == Side.left && tempObj2.Vel.X > 0 && tempObj2.Vel.X > tempObj1.Vel.X) && !(collisionSide == Side.right && tempObj2.Vel.X < 0 && tempObj2.Vel.X < tempObj1.Vel.X))
+                {
+                    //Applies conservation of momentum
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.VelX = (((((obj1.Mass - tempObj2.Mass) / (obj1.Mass + tempObj2.Mass)) * obj1.Vel.X) + (((2 * tempObj2.Mass) / (obj1.Mass + tempObj2.Mass)) * tempObj2.Vel.X)));
+
+                        obj1.VelX *= obj1.Restitution + tempObj2.Restitution; //Applies bounciness
+                    }
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.VelX = (((((obj2.Mass - tempObj1.Mass) / (obj2.Mass + tempObj1.Mass)) * obj2.Vel.X) + (((2 * tempObj1.Mass) / (obj2.Mass + tempObj1.Mass)) * tempObj1.Vel.X)));
+
+                        obj2.VelX *= obj2.Restitution + tempObj1.Restitution; //Applies bounciness
+                    }
+                    //speed.X = ((speed.X * (mass - obj.Mass) + 2 * (obj.Mass * obj.Speed.X)) / (mass + obj.Mass));
+
+                    //speed.X += (speed.X - prevSpeed.X) * (bounciness + obj.Bounciness); //Applies equal and opposite impulse force
+                }
+                #endregion
+
+                #region Apply Y Axis Friction
+                //Applies friction to the Y axis
+                obj1.ContactFrictionY += totalFriction;
+                obj2.ContactFrictionY += totalFriction;
+                #endregion
+            }
+            #endregion
+
+            #region Y Axis Collision
+            else
+            {
+                #region Apply Overlap
+                //************************************************************************************************
+                //Applies overLapAppliable to the overLap for the y axis if and only if the calculation succeeded
+                //************************************************************************************************
+                if (!obj1OverLapAppliable.Y.Equals(float.NaN))
+                {
+                    obj1OverLap.Y *= obj1OverLapAppliable.Y;
+                    obj2OverLap.Y *= 1 - obj1OverLapAppliable.Y;
+                }
+
+                if (collisionSide == Side.top)
+                {
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.PosY -= obj1OverLap.Y;//Moves the object out of the other object by the correct amount
+                    }
+                    obj1.Sided[Side.bottom] = true; //Sets the flag stating that the object is on a surface to true
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.PosY += obj2OverLap.Y;//Moves the object out of the other object by the correct amount
+                    }
+                    obj2.Sided[Side.top] = true; //Sets the flag stating that the object is on a surface to true
+                }
+                else
+                {
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.PosY += obj1OverLap.Y;//Moves the object out of the other object by the correct amount
+                    }
+                    obj1.Sided[Side.top] = true; //Sets the flag stating that the object is on a surface to true
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.PosY -= obj2OverLap.Y;//Moves the object out of the other object by the correct amount
+                    }
+                    obj2.Sided[Side.bottom] = true; //Sets the flag stating that the object is on a surface to true
+                }
+                #endregion
+
+                #region Set Previous Y Velocity
+                obj1.PrevVelY = obj1.Vel.Y; //Stores the velocity of the object before the collision occurs
+                obj2.PrevVelY = obj2.Vel.Y; //Stores the velocity of the object before the collision occurs
+                #endregion
+
+                #region Conserve Momentum
+                //Everything in here should on occur during an overlap
+                //(somethings should occur when there's no overlap but the objects are next to each other"
+                if (overLap.Y > 0 && !(collisionSide == Side.top && tempObj1.Vel.Y < 0 && tempObj2.Vel.Y > tempObj1.Vel.Y) && !(collisionSide == Side.bottom && tempObj1.Vel.Y > 0 && tempObj2.Vel.Y < tempObj1.Vel.Y) && !(collisionSide == Side.top && tempObj2.Vel.Y > 0 && tempObj2.Vel.Y > tempObj1.Vel.Y) && !(collisionSide == Side.bottom && tempObj2.Vel.Y < 0 && tempObj2.Vel.Y < tempObj1.Vel.Y))
+                {
+                    //Apply conservation of momentum
+                    if (obj1.ApplyMomentum)
+                    {
+                        obj1.VelY = (((obj1.Mass - tempObj2.Mass) / (obj1.Mass + tempObj2.Mass)) * obj1.Vel.Y) + (((2 * tempObj2.Mass) / (obj1.Mass + tempObj2.Mass)) * tempObj2.Vel.Y);
+
+                        obj1.VelY *= obj1.Restitution + tempObj2.Restitution; //Applies bounciness
+                    }
+
+                    if (obj2.ApplyMomentum)
+                    {
+                        obj2.VelY = (((obj2.Mass - tempObj1.Mass) / (obj2.Mass + tempObj1.Mass)) * obj2.Vel.Y) + (((2 * tempObj1.Mass) / (obj2.Mass + tempObj1.Mass)) * tempObj1.Vel.Y);
+
+                        obj2.VelY *= obj2.Restitution + tempObj1.Restitution; //Applies bounciness
+                    }
+                }
+                #endregion
+
+                #region Apply X Axis Friction
+                //Applies friction to the X axis
+                obj1.ContactFrictionX += totalFriction;
+                obj2.ContactFrictionX += totalFriction;
+                #endregion
+            }
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Properties
+        static public PlayerObj LocalPlayer
+        {
+            get
+            {
+                return m_localPlayer;
+            }
+            set
+            {
+                m_localPlayer = value;
+            }
+        }
+
+        static public LinkedList<PlayerObj> PlayerObjList
+        {
+            get
+            {
+                return m_playerObjList;
+            }
+        }
+
+        static public LinkedList<HazardObj> HazardObjList
+        {
+            get
+            {
+                return m_hazardObjList;
+            }
+        }
+
+        static public LinkedList<EnvironmentalObj> EnvironmentalObjList
+        {
+            get
+            {
+                return m_environmentalObjList;
+            }
+        }
+
+        static public LinkedList<SpecialEnvironmentalObj> SpecialEnvironmentalObjList
+        {
+            get
+            {
+                return m_specialEnvironmentalObjList;
+            }
+        }
+
+        static public LinkedList<ItemObj> ItemObjList
+        {
+            get
+            {
+                return m_itemObjList;
+            }
+        }
+
+        static public LinkedList<BasicObj> BasicObjList
+        {
+            get
+            {
+                return m_basicObjList;
+            }
+        }
+
+        static public Camera2D TrackingCamera
+        {
+            get
+            {
+                return m_trackingCamera;
+            }
+        }
+        #endregion
+    }
+}

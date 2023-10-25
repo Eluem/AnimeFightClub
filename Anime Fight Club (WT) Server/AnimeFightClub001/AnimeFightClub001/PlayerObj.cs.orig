@@ -1,0 +1,205 @@
+﻿//**********************************************************
+// File: Player.cs
+//
+// Purpose: Defines a player object based on a basic
+// object. This player object is controlled by
+// the player, either directly via a gamepad or
+// over the network via instructions sent by
+// the server
+//
+// Written By: Salvatore Hanusiewicz, modified by Rob Maggio
+//**********************************************************
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Storage;
+using Lidgren.Network;
+
+namespace AnimeFightClub001
+{
+    class PlayerObj : BasicObj
+    {
+        #region Declarations
+        protected Int64 m_playerID; //Used to identify the player (in multiplayer games this is the RemoteUniqueIdentifier)
+        protected Controller m_ctrl; //Used to store the abstracted controller
+        protected int m_jumpCounter; //Used to count frames, limiting jump height.
+        protected bool m_canDoubleJump;
+        protected bool m_oldJump;
+        #endregion
+
+
+        //****************************************************
+        // Method: PlayerObj
+        //
+        // Purpose: Constructor for PlayerObj
+        //****************************************************
+        public PlayerObj(Int64 playerID):base()
+        {
+            m_playerID = playerID;
+
+
+            m_ctrl = new AnimeFightClub001.Controller(PlayerIndex.One, ControllerType.Gamepad);
+            SetDimensions(50, 120);
+            
+            m_physicsObj.Mass = 1;
+            m_physicsObj.Restitution = .15f;
+        }
+
+
+        //****************************************************
+        // Method: Update
+        //
+        // Purpose: Updates the player
+        //****************************************************
+        public override void Update(GameTime gameTime, Viewport viewport)
+        {
+            HandleControlInput(gameTime);
+
+            //PhysicsObj.Sided[Side.bottom] = true;
+
+            PhysicsObj.Update(gameTime, viewport);
+            UpdateDrawable(gameTime);
+        }
+
+        //****************************************************
+        // Method: UpdateDrawable
+        //
+        // Purpose: Updates the details of the objects
+        // drawbleObj
+        //****************************************************
+        public override void UpdateDrawable(GameTime gameTime)
+        {
+            m_drawableObj.Update(gameTime);
+        }
+
+        //****************************************************
+        // Method: HandleControlInput
+        //
+        // Purpose: Modifies the player based on the 
+        // player's input
+        //****************************************************
+        public void HandleControlInput(GameTime gameTime)
+        {
+
+
+
+            if (m_physicsObj.Sided[Side.bottom])
+            {
+                PhysicsObj.AccelX = 0;
+                m_canDoubleJump = true;
+                PhysicsObj.VelX *= .7f;  //Not the most realistic friction, but it works.
+                //Basic left-right walking (no dashing)
+                if (ControllerState.isControlPressed(Control.MoveRight))
+                {
+                    PhysicsObj.VelX = 300;
+                }
+
+                if (ControllerState.isControlPressed(Control.MoveLeft))
+                {
+                    PhysicsObj.VelX = -300;
+                }
+            }
+            else
+            {
+                //Basic left-right walking (no dashing)
+                if (ControllerState.isControlPressed(Control.MoveRight))
+                {
+                    PhysicsObj.AccelX = 800;
+                }
+
+                if (ControllerState.isControlPressed(Control.MoveLeft))
+                {
+                    PhysicsObj.AccelX = -800;
+                }
+
+                if (PhysicsObj.VelX > 300)
+                    PhysicsObj.VelX = 300;
+                if (PhysicsObj.VelX < -300)
+                    PhysicsObj.VelX = -300;
+
+            }
+            //Beginning of a jump.  Initial upward acceleration.
+            if (ControllerState.isControlPressed(Control.Jump) && !m_oldJump && (m_physicsObj.Sided[Side.bottom] || m_canDoubleJump))
+            {
+                m_oldJump = true;
+
+                if (!m_physicsObj.Sided[Side.bottom])
+                {
+                    m_canDoubleJump = false;
+                    PhysicsObj.VelX = 0;
+                }
+                
+                PhysicsObj.VelY = -100;
+                PhysicsObj.AccelY = -3000;
+                m_jumpCounter = 0;
+            }
+
+
+            if (ControllerState.isControlPressed(Control.Jump))
+                m_jumpCounter += gameTime.ElapsedGameTime.Milliseconds;
+            else
+                m_oldJump = false;
+
+
+            //Ending a jump.  Set vertical acceleration
+            if (!ControllerState.isControlPressed(Control.Jump) || m_jumpCounter >= 166)
+            {
+                PhysicsObj.AccelY = GlobalVariables.Settings.Gravity;
+                m_jumpCounter = 0;
+            }
+
+           
+
+        }
+
+ 
+
+        //****************************************************
+        // Method: NetSendMe
+        //
+        // Purpose: Accepts a NetOutgoingMessage and writes
+        // the approraite data to it
+        //****************************************************
+        public override void NetSendMe(NetOutgoingMessage sendMsg)
+        {
+            base.NetSendMe(sendMsg);
+            sendMsg.Write(PlayerID);
+        }
+
+        #region Properties
+        public long PlayerID
+        {
+            get
+            {
+                return m_playerID;
+            }
+        }
+
+        public ControllerState ControllerState
+        {
+            get
+            {
+                return m_ctrl.ControllerState;
+            }
+        }
+
+        public Controller Controller
+        {
+            get
+            {
+                return m_ctrl;
+            }
+        }
+        #endregion
+    }
+}
