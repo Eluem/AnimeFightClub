@@ -1,9 +1,9 @@
 # AnimeFightClub
 
-AnimeFightClub is an online multiplayer 2d side scrolling action combat game  
-The project was built by two programmers and two artists as a senior college project in 2012  
-I was the lead programmer and created the networking architecture, a simple lightweight access database to store user info on the master server, and wrote a simple 2d physics engine  
-We used the XNA framework to handle drawing to the screen and getting controller inputs. The project also takes advantage of Lidgren to handle sending packets between the Client, Server, and Master Server.
+- AnimeFightClub is an online multiplayer 2d side scrolling action combat game
+- The project was built by two programmers and two artists as a senior college project in 2012
+- I was the lead programmer and created the networking architecture, a simple lightweight access database to store user info on the master server, and wrote a simple 2d physics engine
+- We used the XNA framework to handle drawing to the screen and getting controller inputs. The project also takes advantage of Lidgren to handle sending packets between the Client, Server, and Master Server.
 
 ### Requirements
 - XNA 4.0 Redistributable (can be found at: https://www.microsoft.com/en-us/Download/confirmation.aspx?id=20914)
