@@ -26,8 +26,8 @@
 - Choose a loadout
 - Join your Server
 - If you want to play over the network:
-  - Set up the correct port forwarding for the hosting computer
-  - Point remote Clients to the public IP that your Master Server is hosted on
+  - Set up the correct port forwarding for the hosting computer (Default Port 7777 for Server and ???? for Master Server)
+  - Update Client and Server config.txt to point correct public IP that your Master Server is hosted on  (look for "Master Server IP = localhost" and replace "localhost" with the correct IP)
 
 ## Controls
 
