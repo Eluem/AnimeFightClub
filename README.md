@@ -33,15 +33,20 @@
 ## Controls
 
 - LStick: Movement
-- RB: 
-- LB: 
-- RT: 
-- LT: 
-- A: 
-- B: 
-- X: 
-- Y: 
+- RB: Sprint
+- RS: Aim (Only for Pistol)
+- LB: Nothing
+- RT: Main Weapon
+- LT: Offhand
+- A: Jump>Double Jump
+- X: Special #1
+- Y: Special #2
+- B: Special #3
 
 ## Tips
 
-- 
+- Specials cost mana, and give no feedback when you don't have enough mana (The Spike Trap costs all your mana, the Poison Spike Trap costs more than half)
+- Players drop health orbs on death
+- Player health is indicated by the color of the name tag over their head
+- The swords have fully charged attacks (Magic Sword increases range, normal Sword increases damage)
+- The Pistol can be aimed with the Right Stick if you stand still
